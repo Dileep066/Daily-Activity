@@ -1,0 +1,29 @@
+name: Daily Repository Update
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update daily log
+        run: |
+          echo "Last updated on $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> daily-log.txt
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "dileepkumaryagati988@gmail.com"
+          git add daily-log.txt
+          git diff --cached --quiet || git commit -m "chore: daily log update"
+          git push
